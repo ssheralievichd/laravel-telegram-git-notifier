@@ -26,25 +26,11 @@ services:
       - TIMEZONE=${TIMEZONE:-UTC}
     networks:
       - telegram-notifier-network
-    depends_on:
-      - redis
-
-  redis:
-    image: redis:7-alpine
-    container_name: telegram-notifier-redis
-    restart: unless-stopped
-    volumes:
-      - redis-data:/data
-    networks:
-      - telegram-notifier-network
-    command: redis-server --appendonly yes
 
 networks:
   telegram-notifier-network:
     driver: bridge
 
 volumes:
-  redis-data:
-    driver: local
   app-storage:
     driver: local

@@ -128,12 +128,9 @@ Permissions:
 - Headers: `X-Gitlab-Token`, `X-Gitlab-Event`
 - Events: Push, MR, Issues, etc.
 
-### Redis (Optional)
+### Redis
 
-Service: `redis:7-alpine`
-- Port: `6379`
-- Purpose: Cache/session storage
-- Fallback: File-based cache
+**Not used by this package**. The package uses file-based JSON storage for all configuration and settings. Redis was initially included but is unnecessary.
 
 ## Route Structure
 
