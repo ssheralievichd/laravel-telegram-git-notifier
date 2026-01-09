@@ -29,4 +29,15 @@ if [ ! -d "/var/www/html/bootstrap/cache" ]; then
     chmod -R 775 /var/www/html/bootstrap/cache
 fi
 
+if [ -f "/var/www/html/database/database.sqlite" ]; then
+    chown www-data:www-data /var/www/html/database/database.sqlite
+    chmod 664 /var/www/html/database/database.sqlite
+fi
+
+if [ ! -d "/var/www/html/database" ]; then
+    mkdir -p /var/www/html/database
+fi
+chown -R www-data:www-data /var/www/html/database
+chmod -R 775 /var/www/html/database
+
 exec "$@"
