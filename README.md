@@ -16,40 +16,250 @@
 
 ## 📝 Introduction
 
-Laravel Telegram Git Notifier is a Laravel package that allows you to create a Telegram bot to receive notifications from GitHub
-or GitLab events and manage customization through messages and buttons on Telegram.
+Laravel Telegram Git Notifier is a Laravel package that allows you to create a Telegram bot to receive notifications from GitHub or GitLab events and manage customization through messages and buttons on Telegram.
 
-- Send notifications of your GitHub/GitLab repositories to Telegram Bots, Groups, Super Groups (Multiple Topics), and
-  Channels.
+- Send notifications of your GitHub/GitLab repositories to Telegram Bots, Groups, Super Groups (Multiple Topics), and Channels.
 - The bot must be created using the [BotFather](https://core.telegram.org/bots#6-botfather)
+
+## 🎉 Features
+
+1. **GitHub/GitLab Notifications to Telegram**: Configure a Telegram bot to receive notifications from various GitHub/GitLab events, including **commits, pull requests, issues, releases, and many more**.
+
+2. **Customize Notifications**: Customize the types of notifications you want to receive through options on Telegram.
+
+3. **Interactive Buttons**: Create interactive buttons on Telegram to perform actions such as enabling or disabling notifications.
+
+4. **Event Management**: Manage specific events that you want to receive notifications for, allowing you to focus on what's most important for your projects.
+   - Support for multiple platforms: GitHub and GitLab
+   - Manage event notifications separately between platforms
+
+5. **Easy Integration**: Provides an API and user-friendly functions to create a Telegram bot and link it to your GitHub/GitLab account.
+
+6. **Support for Multiple Chats**: Add multiple chat IDs to receive notifications in different groups, channels, or user chats. You can also add the bot's own chat ID to receive notifications.
+
+7. **For Premium Users**:
+   - **Support for Multiple Topics**: Add multiple topics for supergroups to organize notifications by topic/thread.
 
 ## 📋 Requirements
 
 - PHP ^8.1
 - [Composer](https://getcomposer.org/)
+- Docker & Docker Compose (for Docker installation method)
 - Core: [Telegram Git Notifier](https://github.com/cslant/telegram-git-notifier.git)
 
 ## 🔧 Installation
 
-You can install this package via Composer:
+This package can be installed in an existing Laravel application or run standalone using Docker.
+
+### For Existing Laravel Applications
+
+Install via Composer:
 
 ```bash
 composer require cslant/laravel-telegram-git-notifier
 ```
 
-## 🚀 Usage
+### Standalone Installation with Docker
 
-See the [Usage - Telegram git notifier Documentation](https://docs.cslant.com/telegram-git-notifier/usage/first_test)
-for a list of usage.
+This repository includes a Docker setup that creates a test Laravel application with the package pre-installed.
 
-Please check and update some configurations in the documentation.
+#### 1. Clone and Setup
 
-## 📖 Official Documentation
+```bash
+git clone https://github.com/cslant/laravel-telegram-git-notifier.git
+cd laravel-telegram-git-notifier
+cp .env.example .env
+```
 
-Please see the [Telegram Git Notifier Documentation](https://docs.cslant.com/telegram-git-notifier) for more
-information.
+#### 2. Configure Environment Variables
 
-## ✨ Supported events
+Edit `.env` and set:
+
+```dotenv
+APP_PORT=8085
+APP_URL=http://localhost:8085
+
+TELEGRAM_BOT_TOKEN=your_bot_token_here
+TELEGRAM_NOTIFY_CHAT_IDS=your_chat_ids_here
+
+TGN_APP_NAME=Laravel Telegram Git Notifier
+TGN_APP_URL=http://localhost:8085
+TGN_DEFAULT_ROUTE_PREFIX=telegram-git-notifier
+```
+
+#### 3. Build and Start Containers
+
+```bash
+docker-compose up -d --build
+```
+
+#### 4. Verify Installation
+
+Check container status:
+```bash
+docker-compose ps
+```
+
+Access endpoints:
+- Application: `http://localhost:8085`
+- Webhook info: `http://localhost:8085/telegram-git-notifier/webhook/info`
+
+## 🚀 Configuration
+
+### Step 1: Create a Telegram Bot
+
+1. Open a chat with [BotFather](https://telegram.me/botfather)
+2. Send `/newbot` command
+3. Enter a friendly name for your bot
+4. Enter a unique username ending in `bot` (e.g., `MyProjectBot`)
+5. Copy the HTTP API token provided
+6. Add the token to your `.env` file:
+
+```dotenv
+TELEGRAM_BOT_TOKEN=123456789:ABCDEFGHIJKLMNOPQRSTUVWXYZ
+```
+
+### Step 2: Set Up Domain and SSL (Required for Production)
+
+For production, you need HTTPS. For local testing, you can use ngrok:
+
+1. Start your Docker container:
+   ```bash
+   docker-compose up -d
+   ```
+
+2. Install and run [ngrok](https://ngrok.com/download):
+   ```bash
+   ngrok http 8085
+   ```
+
+3. Copy the HTTPS URL provided by ngrok and update `.env`:
+   ```dotenv
+   TGN_APP_URL=https://your-ngrok-url.ngrok-free.app
+   APP_URL=https://your-ngrok-url.ngrok-free.app
+   ```
+
+4. Restart the container:
+   ```bash
+   docker-compose restart
+   ```
+
+### Step 3: Get Your Chat ID
+
+1. Open a chat with your bot
+2. Send any message to the bot
+3. Visit: `http://your-domain/telegram-git-notifier/webhook/updates`
+4. Find the `"chat":{"id":` field and copy the number
+5. Add to `.env`:
+
+```dotenv
+TELEGRAM_NOTIFY_CHAT_IDS=123456789
+```
+
+### Step 4: Set the Webhook
+
+#### Option A: Using the Package Endpoint
+
+Visit: `http://your-domain/telegram-git-notifier/webhook/set`
+
+You should see:
+```json
+{"ok":true,"result":true,"description":"Webhook was set"}
+```
+
+#### Option B: Using Artisan Command
+
+```bash
+docker exec telegram-git-notifier php artisan tg-notifier:webhook:set
+```
+
+#### Option C: Manual Telegram API Call
+
+```
+https://api.telegram.org/bot<YourBotToken>/setWebhook?url=<TGN_APP_URL>/telegram-git-notifier/
+```
+
+### Step 5: Configure Notification Recipients
+
+#### Single Chat
+
+```dotenv
+TELEGRAM_NOTIFY_CHAT_IDS=123456789
+```
+
+#### Multiple Chats
+
+Use semicolons to separate chat IDs:
+```dotenv
+TELEGRAM_NOTIFY_CHAT_IDS=123456789;987654321
+```
+
+#### With Supergroup Topics (Premium)
+
+Use colons to specify thread IDs:
+```dotenv
+TELEGRAM_NOTIFY_CHAT_IDS="-1001234567:2;-1009876543:5,10"
+```
+
+Format explanation:
+- `;` separates different chats
+- `:` separates chat ID from thread ID
+- `,` separates multiple threads in the same chat
+
+Example:
+```dotenv
+TELEGRAM_NOTIFY_CHAT_IDS="-978339113;-1001933979183:2,13;6872320129"
+```
+
+This sends notifications to:
+- Chat `-978339113` (no specific thread)
+- Chat `-1001933979183` threads `2` and `13`
+- Chat `6872320129` (no specific thread)
+
+## 🎮 Usage
+
+### Bot Commands
+
+Send commands to your bot on Telegram:
+
+```
+/start    - Initialize bot and show welcome message
+/menu     - Display main menu
+/id       - Show your chat ID
+/token    - Display bot token info
+/usage    - Show usage instructions
+/server   - Display server information
+/settings - Open notification settings
+/set_menu - Register bot commands menu
+```
+
+### Configure GitHub Webhook
+
+1. Go to your GitHub repository
+2. Navigate to **Settings** → **Webhooks** → **Add webhook**
+3. Set Payload URL: `https://your-domain/telegram-git-notifier/`
+4. Content type: `application/json`
+5. Select events you want to receive
+6. Click **Add webhook**
+
+### Configure GitLab Webhook
+
+1. Go to your GitLab project
+2. Navigate to **Settings** → **Webhooks**
+3. Set URL: `https://your-domain/telegram-git-notifier/`
+4. Select trigger events
+5. Click **Add webhook**
+
+### Customize Notifications
+
+1. Send `/settings` to your bot
+2. Use interactive buttons to:
+   - Enable/disable specific event types
+   - Configure GitHub events
+   - Configure GitLab events
+   - Manage custom events
+
+## ✨ Supported Events
 
 ### GitHub Events Available
 
@@ -62,11 +272,18 @@ information.
 - [x] Commit Comment
 - [x] Deployment
 - [x] Deployment Status
-- [x] Fork
-- [x] Workflow
-- [x] Watch
+- [x] Workflow Job
+- [x] Workflow Run
+- [x] Watch (Stars)
+- [x] Label
+- [x] Branch Protection Rule
+- [x] Deploy Key
+- [x] Meta
+- [x] Ping
+- [x] Team
+- [x] Team Add
 
-  ... and more events can be seen in the [all GitHub events available](https://docs.cslant.com/telegram-git-notifier/prologue/event-availability/github)
+[See all GitHub events](https://docs.cslant.com/telegram-git-notifier/prologue/event-availability/github)
 
 ### GitLab Events Available
 
@@ -74,15 +291,137 @@ information.
 - [x] Tag Push
 - [x] Issue
 - [x] Merge Request
-- [x] Note
+- [x] Note (Comments)
 - [x] Pipeline
 - [x] Wiki Page
-- [x] Build
+- [x] Job (Build)
 - [x] Deployment
 - [x] Release
+- [x] Feature Flag
 
-  ... and more events can be seen in the [all GitLab events available](https://docs.cslant.com/telegram-git-notifier/prologue/event-availability/gitlab)
+[See all GitLab events](https://docs.cslant.com/telegram-git-notifier/prologue/event-availability/gitlab)
 
-## License
+## 🐳 Docker Usage
+
+### Container Management
+
+```bash
+# Start containers
+docker-compose up -d
+
+# Stop containers
+docker-compose down
+
+# View logs
+docker-compose logs -f app
+
+# Restart containers
+docker-compose restart
+
+# Rebuild containers
+docker-compose up -d --build
+```
+
+### Execute Commands Inside Container
+
+```bash
+# Run artisan commands
+docker exec telegram-git-notifier php artisan tg-notifier:webhook:set
+
+# Check routes
+docker exec telegram-git-notifier php artisan route:list | grep telegram
+
+# Check storage permissions
+docker exec telegram-git-notifier ls -la storage/app/vendor/tg-notifier/jsons
+
+# Fix permissions if needed
+docker exec telegram-git-notifier chown -R www-data:www-data storage
+```
+
+### Access Container Shell
+
+```bash
+docker exec -it telegram-git-notifier sh
+```
+
+## 📖 Official Documentation
+
+For detailed documentation, please visit:
+- [Telegram Git Notifier Documentation](https://docs.cslant.com/telegram-git-notifier)
+- [Usage Guide](https://docs.cslant.com/telegram-git-notifier/usage/first_test)
+- [DEPS.md](DEPS.md) - Complete dependency and architecture documentation
+
+## 🔧 Troubleshooting
+
+### Webhook Not Working
+
+1. Check webhook status:
+   ```bash
+   curl http://localhost:8085/telegram-git-notifier/webhook/info
+   ```
+
+2. Verify bot token is correct in `.env`
+
+3. Ensure `TGN_APP_URL` is publicly accessible (use ngrok for testing)
+
+4. Re-register webhook:
+   ```bash
+   docker exec telegram-git-notifier php artisan tg-notifier:webhook:set
+   ```
+
+### No Notifications Received
+
+1. Verify `TELEGRAM_NOTIFY_CHAT_IDS` is set correctly
+
+2. Check bot is a member of the target group/channel
+
+3. Ensure events are enabled in bot settings (send `/settings` to bot)
+
+4. Check container logs:
+   ```bash
+   docker-compose logs -f app
+   ```
+
+### Permission Errors
+
+Fix storage permissions:
+```bash
+docker exec telegram-git-notifier chown -R www-data:www-data storage
+docker exec telegram-git-notifier chmod -R 775 storage
+```
+
+### Port Already in Use
+
+Change `APP_PORT` in `.env` to an available port:
+```dotenv
+APP_PORT=8086
+```
+
+Then restart:
+```bash
+docker-compose down
+docker-compose up -d
+```
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## 📝 License
 
 The MIT License (MIT). Please see [License File](LICENSE) for more information.
+
+## 🔗 Links
+
+- [Package Repository](https://github.com/cslant/laravel-telegram-git-notifier)
+- [Core Library](https://github.com/cslant/telegram-git-notifier)
+- [Packagist](https://packagist.org/packages/cslant/laravel-telegram-git-notifier)
+- [Documentation](https://docs.cslant.com/telegram-git-notifier)
+- [Issues](https://github.com/cslant/laravel-telegram-git-notifier/issues)
+
+## 📧 Support
+
+If you have any questions or need help, please:
+- Open an [issue](https://github.com/cslant/laravel-telegram-git-notifier/issues)
+- Visit our [discussions](https://github.com/cslant/laravel-telegram-git-notifier/discussions)
+- Check the [documentation](https://docs.cslant.com/telegram-git-notifier)
