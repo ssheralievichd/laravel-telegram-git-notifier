@@ -1,10 +1,6 @@
 # Welcome to Telegram GitHub/GitLab Notifier 👋
 
 <p align="center">
-  <img alt="Telegram GitHub/GitLab Notifier Laravel" src="https://github.com/cslant/laravel-telegram-git-notifier/blob/main/resources/images/telegram-git-notifier-laravel.png" />
-</p>
-
-<p align="center">
 <a href="#"><img src="https://img.shields.io/github/license/cslant/laravel-telegram-git-notifier.svg?style=flat-square" alt="License"></a>
 <a href="https://github.com/cslant/laravel-telegram-git-notifier/releases"><img src="https://img.shields.io/github/release/cslant/laravel-telegram-git-notifier.svg?style=flat-square" alt="Latest Version"></a>
 <a href="https://packagist.org/packages/cslant/laravel-telegram-git-notifier"><img src="https://img.shields.io/packagist/dt/cslant/laravel-telegram-git-notifier.svg?style=flat-square" alt="Total Downloads"></a>
@@ -25,6 +21,10 @@ Laravel Telegram Git Notifier is a Laravel package that allows you to create a T
 
 1. **GitHub/GitLab Notifications to Telegram**: Configure a Telegram bot to receive notifications from various GitHub/GitLab events, including **commits, pull requests, issues, releases, and many more**.
 
+<p align="center">
+  <img alt="GitHub/GitLab Notifications to Telegram" src="https://github.com/cslant/telegram-git-notifier-app/assets/35853002/462f330f-11d3-43ef-89cf-c70ade57b654" />
+</p>
+
 2. **Customize Notifications**: Customize the types of notifications you want to receive through options on Telegram.
 
 3. **Interactive Buttons**: Create interactive buttons on Telegram to perform actions such as enabling or disabling notifications.
@@ -32,6 +32,10 @@ Laravel Telegram Git Notifier is a Laravel package that allows you to create a T
 4. **Event Management**: Manage specific events that you want to receive notifications for, allowing you to focus on what's most important for your projects.
    - Support for multiple platforms: GitHub and GitLab
    - Manage event notifications separately between platforms
+
+<p align="center">
+  <img alt="Event Management to Telegram" src="https://github.com/cslant/telegram-git-notifier-app/assets/35853002/e217a2ad-49b5-4936-a2cd-fe4af66e2bfb" />
+</p>
 
 5. **Easy Integration**: Provides an API and user-friendly functions to create a Telegram bot and link it to your GitHub/GitLab account.
 
@@ -232,6 +236,10 @@ Send commands to your bot on Telegram:
 /settings - Open notification settings
 /set_menu - Register bot commands menu
 ```
+
+<p align="center">
+  <img alt="Telegram Bot Commands" src="https://github.com/cslant/telegram-git-notifier-app/assets/35853002/5da8b972-0072-4f7e-ba4b-a341898bb959" />
+</p>
 
 ### Configure GitHub Webhook
 
