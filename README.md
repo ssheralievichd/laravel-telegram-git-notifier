@@ -223,6 +223,46 @@ This sends notifications to:
 
 ## 🎮 Usage
 
+### Dynamic Chat/Thread Management
+
+Manage notification chats and threads without restarting the container:
+
+```bash
+# List current chats and threads
+docker exec telegram-git-notifier php artisan tgn:chats list
+
+# Add a chat (all threads)
+docker exec telegram-git-notifier php artisan tgn:chats add <chat_id>
+
+# Add a specific thread to a chat
+docker exec telegram-git-notifier php artisan tgn:chats add -- <chat_id> <thread_id>
+
+# Remove a thread from a chat
+docker exec telegram-git-notifier php artisan tgn:chats remove -- <chat_id> <thread_id>
+
+# Remove entire chat
+docker exec telegram-git-notifier php artisan tgn:chats remove <chat_id>
+
+# Sync from TELEGRAM_NOTIFY_CHAT_IDS env variable
+docker exec telegram-git-notifier php artisan tgn:chats sync
+```
+
+**Example:**
+```bash
+# Add supergroup with thread
+docker exec telegram-git-notifier php artisan tgn:chats add -- "-1001933979183" "2"
+
+# Add another thread to same chat
+docker exec telegram-git-notifier php artisan tgn:chats add -- "-1001933979183" "13"
+
+# List configuration
+docker exec telegram-git-notifier php artisan tgn:chats list
+```
+
+**Note:** Use `--` before negative chat IDs to prevent them being interpreted as options.
+
+Changes take effect immediately without container restart.
+
 ### Bot Commands
 
 Send commands to your bot on Telegram:
