@@ -122,11 +122,16 @@ Permissions:
 - Sends events to: `{APP_URL}/telegram-git-notifier/`
 - Headers: `X-GitHub-Event`, `X-Hub-Signature`
 - Events: Push, PR, Issues, etc.
+- **Important**: Package expects `application/x-www-form-urlencoded` with JSON in `payload` parameter
+  - Modern GitHub sends `application/json` by default, which causes initialization errors
+  - Configure webhook Content-Type as `application/x-www-form-urlencoded` in GitHub settings
+  - This is a package limitation in v1.5.0
 
 **GitLab Webhooks**
 - Sends events to: `{APP_URL}/telegram-git-notifier/`
 - Headers: `X-Gitlab-Token`, `X-Gitlab-Event`
 - Events: Push, MR, Issues, etc.
+- Uses `application/json` Content-Type (works correctly)
 
 ### Redis
 

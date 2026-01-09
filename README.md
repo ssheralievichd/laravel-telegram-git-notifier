@@ -246,7 +246,9 @@ Send commands to your bot on Telegram:
 1. Go to your GitHub repository
 2. Navigate to **Settings** → **Webhooks** → **Add webhook**
 3. Set Payload URL: `https://your-domain/telegram-git-notifier/`
-4. Content type: `application/json`
+4. Content type: **`application/x-www-form-urlencoded`** ⚠️ Important!
+   - The package expects form-encoded data, not JSON
+   - Using `application/json` will cause 500 errors
 5. Select events you want to receive
 6. Click **Add webhook**
 
@@ -379,16 +381,29 @@ For detailed documentation, please visit:
 
 ### No Notifications Received
 
-1. Verify `TELEGRAM_NOTIFY_CHAT_IDS` is set correctly
+1. **Verify GitHub webhook Content-Type is `application/x-www-form-urlencoded`**
+   - Common issue: Using `application/json` causes 500 errors
+   - Check webhook settings in GitHub repository
 
-2. Check bot is a member of the target group/channel
+2. Verify `TELEGRAM_NOTIFY_CHAT_IDS` is set correctly
 
-3. Ensure events are enabled in bot settings (send `/settings` to bot)
+3. Check bot is a member of the target group/channel
 
-4. Check container logs:
+4. Ensure events are enabled in bot settings (send `/settings` to bot)
+
+5. Check container logs:
    ```bash
    docker-compose logs -f app
    ```
+
+### GitHub Webhook 500 Errors
+
+If you see "Server Error" when GitHub sends webhooks:
+
+1. Check the Content-Type in GitHub webhook settings
+2. It must be `application/x-www-form-urlencoded`, not `application/json`
+3. Re-configure the webhook with correct Content-Type
+4. Test with a ping event to verify it works
 
 ### Permission Errors
 
