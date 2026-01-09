@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: telegram-git-notifier
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+      - ./storage/app/vendor/tg-notifier/jsons:/var/www/html/storage/app/vendor/tg-notifier/jsons
+    ports:
+      - "${APP_PORT:-8080}:80"
+    environment:
+      - APP_ENV=${APP_ENV:-production}
+      - APP_DEBUG=${APP_DEBUG:-false}
+      - APP_URL=${APP_URL:-http://localhost:8080}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - TELEGRAM_BOT_CHAT_ID=${TELEGRAM_BOT_CHAT_ID}
+      - TELEGRAM_NOTIFY_CHAT_IDS=${TELEGRAM_NOTIFY_CHAT_IDS}
+      - TGN_APP_NAME=${TGN_APP_NAME:-Laravel Telegram Git Notifier}
+      - TGN_APP_URL=${TGN_APP_URL:-http://localhost:8080}
+      - TGN_DEFAULT_ROUTE_PREFIX=${TGN_DEFAULT_ROUTE_PREFIX:-telegram-git-notifier}
+      - TGN_REQUEST_VERIFY=${TGN_REQUEST_VERIFY:-false}
+      - TIMEZONE=${TIMEZONE:-UTC}
+    networks:
+      - telegram-notifier-network
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:7-alpine
+    container_name: telegram-notifier-redis
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - telegram-notifier-network
+    command: redis-server --appendonly yes
+
+networks:
+  telegram-notifier-network:
+    driver: bridge
+
+volumes:
+  redis-data:
+    driver: local
