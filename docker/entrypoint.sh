@@ -40,9 +40,21 @@ fi
 chown -R www-data:www-data /var/www/html/database
 chmod -R 775 /var/www/html/database
 
+if [ -f "/var/www/html/app/config/app-providers.php" ]; then
+    if ! grep -q "DynamicChatServiceProvider" /var/www/html/bootstrap/providers.php 2>/dev/null; then
+        echo "Registering custom service providers..."
+        cat /var/www/html/app/config/app-providers.php >> /var/www/html/bootstrap/providers.php
+    fi
+fi
+
 if [ -z "${TGN_APP_URL}" ] && [ -n "${APP_URL}" ]; then
     export TGN_APP_URL="${APP_URL}"
     echo "TGN_APP_URL not set, using APP_URL: ${TGN_APP_URL}"
+fi
+
+if [ -n "${TELEGRAM_NOTIFY_CHAT_IDS}" ]; then
+    echo "Syncing chats from environment..."
+    php artisan tgn:chats sync 2>/dev/null || echo "Chat sync failed, will use env value"
 fi
 
 if [ -n "${TELEGRAM_BOT_TOKEN}" ] && [ -n "${TGN_APP_URL}" ]; then

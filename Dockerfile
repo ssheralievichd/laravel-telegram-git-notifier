@@ -39,6 +39,9 @@ RUN mkdir -p storage/app/vendor/tg-notifier/jsons \
     && chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
+COPY docker/app /var/www/html/app
+RUN chown -R www-data:www-data /var/www/html/app
+
 COPY docker/nginx/default.conf /etc/nginx/http.d/default.conf
 COPY docker/supervisor/supervisord.conf /etc/supervisord.conf
 COPY docker/php/php.ini /usr/local/etc/php/conf.d/custom.ini
