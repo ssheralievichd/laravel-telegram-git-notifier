@@ -40,9 +40,14 @@ fi
 chown -R www-data:www-data /var/www/html/database
 chmod -R 775 /var/www/html/database
 
-if [ -n "${TELEGRAM_BOT_TOKEN}" ] && [ -n "${APP_URL}" ]; then
-    echo "Setting Telegram webhook..."
-    php artisan tg-notifier:webhook:set || echo "Warning: Failed to set webhook. Check bot token and APP_URL accessibility."
+if [ -z "${TGN_APP_URL}" ] && [ -n "${APP_URL}" ]; then
+    export TGN_APP_URL="${APP_URL}"
+    echo "TGN_APP_URL not set, using APP_URL: ${TGN_APP_URL}"
+fi
+
+if [ -n "${TELEGRAM_BOT_TOKEN}" ] && [ -n "${TGN_APP_URL}" ]; then
+    echo "Setting Telegram webhook to ${TGN_APP_URL}..."
+    php artisan tg-notifier:webhook:set || echo "Warning: Failed to set webhook. Check bot token and TGN_APP_URL accessibility."
 fi
 
 exec "$@"
