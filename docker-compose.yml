@@ -1,21 +1,20 @@
-version: '3.8'
-
 services:
   app:
     build:
       context: .
       dockerfile: Dockerfile
+      target: test-app
     container_name: telegram-git-notifier
     restart: unless-stopped
     working_dir: /var/www/html
     volumes:
-      - ./:/var/www/html
-      - ./storage/app/vendor/tg-notifier/jsons:/var/www/html/storage/app/vendor/tg-notifier/jsons
+      - app-storage:/var/www/html/storage/app/vendor/tg-notifier/jsons
     ports:
       - "${APP_PORT:-8080}:80"
     environment:
       - APP_ENV=${APP_ENV:-production}
       - APP_DEBUG=${APP_DEBUG:-false}
+      - APP_KEY=base64:cGxlYXNlY2hhbmdldGhpc2tleWluZG90ZW52ZmlsZXMK
       - APP_URL=${APP_URL:-http://localhost:8080}
       - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
       - TELEGRAM_BOT_CHAT_ID=${TELEGRAM_BOT_CHAT_ID}
@@ -48,4 +47,6 @@ networks:
 
 volumes:
   redis-data:
+    driver: local
+  app-storage:
     driver: local

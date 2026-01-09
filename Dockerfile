@@ -1,6 +1,4 @@
-FROM php:8.2-fpm-alpine
-
-WORKDIR /var/www/html
+FROM php:8.2-fpm-alpine AS base
 
 RUN apk add --no-cache \
     git \
@@ -28,16 +26,18 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-COPY --chown=www-data:www-data . /var/www/html
+FROM base AS test-app
 
-RUN composer install --optimize-autoloader --no-dev --prefer-dist
+WORKDIR /var/www/html
 
-RUN mkdir -p /var/www/html/storage/app/vendor/tg-notifier/jsons \
-    && mkdir -p /var/www/html/bootstrap/cache \
-    && chown -R www-data:www-data /var/www/html/storage \
-    && chown -R www-data:www-data /var/www/html/bootstrap/cache \
-    && chmod -R 775 /var/www/html/storage \
-    && chmod -R 775 /var/www/html/bootstrap/cache
+RUN composer create-project laravel/laravel . --prefer-dist --no-interaction --no-dev
+
+RUN composer require cslant/laravel-telegram-git-notifier --with-all-dependencies
+
+RUN mkdir -p storage/app/vendor/tg-notifier/jsons \
+    && mkdir -p bootstrap/cache \
+    && chown -R www-data:www-data storage bootstrap/cache \
+    && chmod -R 775 storage bootstrap/cache
 
 COPY docker/nginx/default.conf /etc/nginx/http.d/default.conf
 COPY docker/supervisor/supervisord.conf /etc/supervisord.conf
