@@ -40,10 +40,15 @@ fi
 chown -R www-data:www-data /var/www/html/database
 chmod -R 775 /var/www/html/database
 
-if [ -f "/var/www/html/app/config/app-providers.php" ]; then
+if [ -f "/var/www/html/app/config/app-providers.php" ] && [ -f "/var/www/html/bootstrap/providers.php" ]; then
     if ! grep -q "DynamicChatServiceProvider" /var/www/html/bootstrap/providers.php 2>/dev/null; then
         echo "Registering custom service providers..."
-        cat /var/www/html/app/config/app-providers.php >> /var/www/html/bootstrap/providers.php
+
+        PROVIDERS_CONTENT=$(cat /var/www/html/app/config/app-providers.php | grep -v "<?php" | grep -v "^return" | grep -v "^\];$" | grep "App\\\\" | tr -d ' ')
+
+        if [ -n "$PROVIDERS_CONTENT" ]; then
+            sed -i "/^];$/i\\    $PROVIDERS_CONTENT," /var/www/html/bootstrap/providers.php
+        fi
     fi
 fi
 
