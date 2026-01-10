@@ -9,6 +9,14 @@ use CSlant\TelegramGitNotifier\Exceptions\MessageIsEmptyException;
 
 class CustomCommandService extends CommandService
 {
+    protected Bot $botInstance;
+
+    public function __construct(Bot $bot)
+    {
+        parent::__construct($bot);
+        $this->botInstance = $bot;
+    }
+
     public function sendStartMessage(Bot $bot): void
     {
         $reply = view(
@@ -21,32 +29,32 @@ class CustomCommandService extends CommandService
 
     public function handle(): void
     {
-        $text = $this->bot->telegram->Text();
+        $text = $this->botInstance->telegram->Text();
 
         switch ($text) {
             case '/start':
-                $this->sendStartMessage($this->bot);
+                $this->sendStartMessage($this->botInstance);
                 break;
             case '/menu':
-                $this->bot->sendMessage(
+                $this->botInstance->sendMessage(
                     view("$this->viewNamespace::tools.menu"),
-                    ['reply_markup' => $this->menuMarkup($this->bot->telegram)]
+                    ['reply_markup' => $this->menuMarkup($this->botInstance->telegram)]
                 );
                 break;
             case '/token':
             case '/id':
             case '/usage':
             case '/server':
-                $this->bot->sendMessage(view("$this->viewNamespace::tools.".trim($text, '/')));
+                $this->botInstance->sendMessage(view("$this->viewNamespace::tools.".trim($text, '/')));
                 break;
             case '/settings':
-                $this->bot->settingHandle();
+                $this->botInstance->settingHandle();
                 break;
             case '/set_menu':
-                $this->bot->setMyCommands(self::menuCommands());
+                $this->botInstance->setMyCommands(self::menuCommands());
                 break;
             default:
-                $this->bot->sendMessage('🤨 '.__('tg-notifier::app.invalid_request'));
+                $this->botInstance->sendMessage('🤨 '.__('tg-notifier::app.invalid_request'));
         }
     }
 }
