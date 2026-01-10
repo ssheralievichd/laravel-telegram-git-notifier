@@ -44,14 +44,8 @@ if [ -f "/var/www/html/app/config/app-providers.php" ] && [ -f "/var/www/html/bo
     if ! grep -q "DynamicChatServiceProvider" /var/www/html/bootstrap/providers.php 2>/dev/null; then
         echo "Registering custom service providers..."
 
-        while IFS= read -r line; do
-            if echo "$line" | grep -q "App\\\\"; then
-                PROVIDER_CLASS=$(echo "$line" | grep -o "App\\\\[^,]*::class" | tr -d ',' | xargs)
-                if [ -n "$PROVIDER_CLASS" ]; then
-                    sed -i "/^];$/i\\    ${PROVIDER_CLASS}," /var/www/html/bootstrap/providers.php
-                fi
-            fi
-        done < /var/www/html/app/config/app-providers.php
+        sed -i '/^];$/i\    App\\Providers\\DynamicChatServiceProvider::class,' /var/www/html/bootstrap/providers.php
+        sed -i '/^];$/i\    App\\Providers\\CustomTelegramRouteServiceProvider::class,' /var/www/html/bootstrap/providers.php
     fi
 fi
 
