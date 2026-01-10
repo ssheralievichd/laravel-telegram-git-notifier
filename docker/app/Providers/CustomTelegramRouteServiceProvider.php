@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Http\Actions\CustomIndexAction;
+use App\Http\Middleware\FilterRepository;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
@@ -14,6 +15,7 @@ class CustomTelegramRouteServiceProvider extends ServiceProvider
 
         Route::prefix($routePrefix)
             ->name("$routePrefix.")
+            ->middleware(FilterRepository::class)
             ->group(function () {
                 Route::match(['get', 'post'], '/', CustomIndexAction::class)->name('index');
             });
