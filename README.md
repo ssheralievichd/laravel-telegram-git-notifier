@@ -278,10 +278,6 @@ Send commands to your bot on Telegram:
 /set_menu - Register bot commands menu
 ```
 
-<p align="center">
-  <img alt="Telegram Bot Commands" src="https://github.com/cslant/telegram-git-notifier-app/assets/35853002/5da8b972-0072-4f7e-ba4b-a341898bb959" />
-</p>
-
 ### Configure GitHub Webhook
 
 1. Go to your GitHub repository
